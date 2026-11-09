@@ -23,6 +23,16 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# IDE settings and local state (also applies after renaming the solution)
+.idea/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+_ReSharper*/
+
 # .NET Core
 project.lock.json
 project.fragment.lock.json
@@ -39,6 +49,18 @@ ScaffoldingReadMe.txt
 # dotenv environment variables file
 .env
 
+# Local paths to the installed game and mod profile
+Weaponbreaker.local.props
+*.local.props
+
+# Local deployment configuration and backups
+/.balance-deploy/
+
+# Generated Thunderstore archives and bundled plugin files (DLLs and licenses)
+/dist/
+/packaging/Thunderstore/*/plugins/
+/packaging/Thunderstore/*/icon.png
+
 # Others
 ~$*
 *~
@@ -46,6 +68,7 @@ CodeCoverage/
 
 # MSBuild Binary and Structured Log
 *.binlog
+*.log
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

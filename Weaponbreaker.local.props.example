@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <ValheimGamePath Condition="'$(ValheimGamePath)' == '' and '$(VALHEIM_GAME_PATH)' == ''">D:\Games\Steam\steamapps\common\Valheim</ValheimGamePath>
+    <ValheimProfilePath Condition="'$(ValheimProfilePath)' == '' and '$(VALHEIM_PROFILE_PATH)' == ''">C:\Users\YOUR_USER\AppData\Roaming\com.kesomannen.gale\valheim\profiles\YOUR_PROFILE</ValheimProfilePath>
+  </PropertyGroup>
+</Project>

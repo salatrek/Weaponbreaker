@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="Weaponbreaker.local.props" Condition="Exists('Weaponbreaker.local.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Weaponbreaker</RootNamespace>
+    <AssemblyName>Weaponbreaker</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+
+    <ValheimProfilePath Condition="'$(ValheimProfilePath)' == '' and '$(VALHEIM_PROFILE_PATH)' != ''">$(VALHEIM_PROFILE_PATH)</ValheimProfilePath>
+    <BepInExPath Condition="'$(BepInExPath)' == '' and '$(ValheimProfilePath)' != ''">$(ValheimProfilePath)\BepInEx</BepInExPath>
+    <ValheimGamePath Condition="'$(ValheimGamePath)' == '' and '$(VALHEIM_GAME_PATH)' != ''">$(VALHEIM_GAME_PATH)</ValheimGamePath>
+    <ValheimManagedPath Condition="'$(ValheimManagedPath)' == '' and '$(ValheimGamePath)' != ''">$(ValheimGamePath)\valheim_Data\Managed</ValheimManagedPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+
+    <Reference Include="BepInEx" Condition="Exists('$(BepInExPath)\core\BepInEx.dll')">
+      <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <Reference Include="0Harmony" Condition="Exists('$(BepInExPath)\core\0Harmony.dll')">
+      <HintPath>$(BepInExPath)\core\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine" Condition="Exists('$(ValheimManagedPath)\UnityEngine.dll')">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <Reference Include="UnityEngine.CoreModule" Condition="Exists('$(ValheimManagedPath)\UnityEngine.CoreModule.dll')">
+      <HintPath>$(ValheimManagedPath)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <Reference Include="assembly_valheim" Condition="Exists('$(ValheimManagedPath)\assembly_valheim.dll')">
+      <HintPath>$(ValheimManagedPath)\assembly_valheim.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+
+    <None Update="weaponbreakerConfigs.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <EmbeddedResource Include="weaponbreakerConfigs.json">
+      <LogicalName>Weaponbreaker.weaponbreakerConfigs.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="ValidateModReferences" BeforeTargets="ResolveAssemblyReferences" Condition="'$(DesignTimeBuild)' != 'true'">
+    <ItemGroup>
+      <_RequiredModReference Include="$(BepInExPath)\core\BepInEx.dll;$(BepInExPath)\core\0Harmony.dll;$(ValheimManagedPath)\UnityEngine.dll;$(ValheimManagedPath)\UnityEngine.CoreModule.dll;$(ValheimManagedPath)\assembly_valheim.dll" />
+    </ItemGroup>
+    <Error Condition="!Exists('%(_RequiredModReference.Identity)')"
+           Text="Missing mod reference: %(_RequiredModReference.Identity). Configure ValheimGamePath and ValheimProfilePath in Weaponbreaker.local.props (see Weaponbreaker.local.props.example and README.md)." />
+  </Target>
+</Project>

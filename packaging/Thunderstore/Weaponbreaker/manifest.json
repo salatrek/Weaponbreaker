@@ -1,0 +1,9 @@
+{
+  "name": "Weaponbreaker",
+  "version_number": "0.1.0",
+  "website_url": "",
+  "description": "Disarm supported enemies with well-timed parries and sneak bow hits. Enemies fight unarmed, retrieve their dropped weapons and can disarm you in return.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2360"
+  ]
+}

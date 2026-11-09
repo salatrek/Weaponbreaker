@@ -1,0 +1,69 @@
+{
+  "Enabled": true,
+  "EnemyDisarmEnabled": true,
+  "PlayerDisarmEnabled": true,
+  "Cooldowns": {
+    "EnemyDisarmSeconds": 8,
+    "EnemyWeaponPickupSeconds": 8,
+    "PlayerDisarmSeconds": 15
+  },
+  "Enemies": {
+    "Skeleton": {
+      "Enabled": true,
+      "EnemyWeaponDisarmChance": 0.30,
+      "PlayerDisarmChance": 0.01
+    },
+    "Draugr": {
+      "Enabled": true,
+      "EnemyWeaponDisarmChance": 0.30,
+      "PlayerDisarmChance": 0.02
+    },
+    "Fuling": {
+      "Enabled": true,
+      "EnemyWeaponDisarmChance": 0.30,
+      "PlayerDisarmChance": 0.04
+    },
+    "Charred": {
+      "Enabled": true,
+      "EnemyWeaponDisarmChance": 0.30,
+      "PlayerDisarmChance": 0.12
+    },
+    "Dvergr": {
+      "Enabled": true,
+      "EnemyWeaponDisarmChance": 0.30,
+      "PlayerDisarmChance": 0.08
+    },
+    "Boar": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.005
+    },
+    "Deathsquito": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.01
+    },
+    "Leech": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.01
+    },
+    "Neck": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.005
+    },
+    "Greydwarf": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.005
+    },
+    "Troll": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.03
+    },
+    "Wolf": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.01
+    },
+    "Lox": {
+      "Enabled": true,
+      "PlayerDisarmChance": 0.02
+    }
+  }
+}
