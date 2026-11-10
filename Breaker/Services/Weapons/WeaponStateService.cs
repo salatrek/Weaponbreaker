@@ -3,8 +3,9 @@ using HarmonyLib;
 using UnityEngine;
 using Weaponbreaker.Breaker.Configuration;
 using Weaponbreaker.Breaker.Rules;
+using Weaponbreaker.Breaker.Services.Loot;
 
-namespace Weaponbreaker.Breaker.Services;
+namespace Weaponbreaker.Breaker.Services.Weapons;
 
 /// <summary>
 /// Owns the persistent state of weapon drops, pickup policy and enemy return behavior.
@@ -30,6 +31,7 @@ internal sealed class WeaponStateService
 
     private readonly WeaponbreakerOptions _configuration;
     private readonly WeaponProvider _weaponProvider;
+    private readonly EnemyWeaponLootService _enemyLoot;
     private readonly ManualLogSource _logger;
     private readonly Dictionary<string, Character> _combatTargets = new(StringComparer.Ordinal);
     private readonly HashSet<string> _returningEnemies = new(StringComparer.Ordinal);
@@ -38,10 +40,12 @@ internal sealed class WeaponStateService
     public WeaponStateService(
         WeaponbreakerOptions configuration,
         WeaponProvider weaponProvider,
+        EnemyWeaponLootService enemyLoot,
         ManualLogSource logger)
     {
         _configuration = configuration;
         _weaponProvider = weaponProvider;
+        _enemyLoot = enemyLoot;
         _logger = logger;
     }
 
@@ -73,6 +77,7 @@ internal sealed class WeaponStateService
             return false;
         }
 
+        dropData = _enemyLoot.Prepare(enemy, enemyZdo, rule.EnemyId, rule.DropPrefab, dropData);
         var droppedWeapon = ItemDrop.DropItem(
             dropData,
             1,

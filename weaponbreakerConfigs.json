@@ -11,26 +11,36 @@
     "Skeleton": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
+      "OverrideEpicLootEnchantChance": false,
+      "EpicLootEnchantChance": 0.15,
       "PlayerDisarmChance": 0.01
     },
     "Draugr": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
+      "OverrideEpicLootEnchantChance": false,
+      "EpicLootEnchantChance": 0.20,
       "PlayerDisarmChance": 0.02
     },
     "Fuling": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
+      "OverrideEpicLootEnchantChance": false,
+      "EpicLootEnchantChance": 0.25,
       "PlayerDisarmChance": 0.04
     },
     "Charred": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
+      "OverrideEpicLootEnchantChance": false,
+      "EpicLootEnchantChance": 0.35,
       "PlayerDisarmChance": 0.12
     },
     "Dvergr": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
+      "OverrideEpicLootEnchantChance": false,
+      "EpicLootEnchantChance": 0.30,
       "PlayerDisarmChance": 0.08
     },
     "Boar": {

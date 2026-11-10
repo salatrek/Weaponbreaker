@@ -34,6 +34,11 @@ internal static class WeaponbreakerOptionsFile
         {
             var enemyOptions = pair.Value ?? new EnemyOptions();
             enemyOptions.EnemyWeaponDisarmChance = Clamp(enemyOptions.EnemyWeaponDisarmChance, 0f, 1f);
+            if (enemyOptions.EpicLootEnchantChance is float enchantChance)
+            {
+                enemyOptions.EpicLootEnchantChance = float.IsNaN(enchantChance)
+                    ? null : Clamp(enchantChance, 0f, 1f);
+            }
             enemyOptions.PlayerDisarmChance = Clamp(enemyOptions.PlayerDisarmChance, 0f, 1f);
             options.Enemies[pair.Key] = enemyOptions;
         }

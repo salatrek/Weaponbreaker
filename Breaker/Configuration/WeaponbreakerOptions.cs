@@ -35,6 +35,12 @@ public sealed class EnemyOptions
     /// </summary>
     public float EnemyWeaponDisarmChance { get; set; } = 0.3f;
 
+    /// <summary>Uses EpicLootEnchantChance instead of EpicLoot's drop chance for this enemy.</summary>
+    public bool OverrideEpicLootEnchantChance { get; set; }
+
+    /// <summary>Chance among disarmed weapons. Missing values use the enemy family's default.</summary>
+    public float? EpicLootEnchantChance { get; set; }
+
     /// <summary>Probability that this enemy disarms the player's active weapon after a real hit.</summary>
     public float PlayerDisarmChance { get; set; } = 0.01f;
 }

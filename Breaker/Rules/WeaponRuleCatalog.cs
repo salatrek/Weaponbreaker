@@ -9,11 +9,11 @@ internal sealed class WeaponRuleCatalog
 {
     private readonly IReadOnlyList<EnemyDefinition> _enemies = new[]
     {
-        new EnemyDefinition("Skeleton", "Skeleton", true, 0.30f, 0.01f),
-        new EnemyDefinition("Draugr", "Draugr", true, 0.30f, 0.02f),
-        new EnemyDefinition("Fuling", "Fuling", true, 0.30f, 0.04f),
-        new EnemyDefinition("Charred", "Charred", true, 0.30f, 0.12f),
-        new EnemyDefinition("Dvergr", "Dvergr", true, 0.30f, 0.08f),
+        new EnemyDefinition("Skeleton", "Skeleton", true, 0.30f, 0.01f, 0.15f),
+        new EnemyDefinition("Draugr", "Draugr", true, 0.30f, 0.02f, 0.20f),
+        new EnemyDefinition("Fuling", "Fuling", true, 0.30f, 0.04f, 0.25f),
+        new EnemyDefinition("Charred", "Charred", true, 0.30f, 0.12f, 0.35f),
+        new EnemyDefinition("Dvergr", "Dvergr", true, 0.30f, 0.08f, 0.30f),
         new EnemyDefinition("Boar", "Boar", false, 0f, 0.005f),
         new EnemyDefinition("Deathsquito", "Deathsquito", false, 0f, 0.01f),
         new EnemyDefinition("Leech", "Leech", false, 0f, 0.01f),

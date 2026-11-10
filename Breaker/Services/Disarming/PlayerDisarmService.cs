@@ -1,8 +1,9 @@
 using BepInEx.Logging;
 using UnityEngine;
 using Weaponbreaker.Breaker.Configuration;
+using Weaponbreaker.Breaker.Services.Weapons;
 
-namespace Weaponbreaker.Breaker.Services;
+namespace Weaponbreaker.Breaker.Services.Disarming;
 
 /// <summary>
 /// Handles the reverse mechanic where a supported enemy can disarm the player.

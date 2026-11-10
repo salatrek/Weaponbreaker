@@ -82,7 +82,8 @@ public static class WeaponbreakerConfigEntries
                 section,
                 "Enabled",
                 defaults.Enabled,
-                $"Enables the {definition.Id} enemy entry.");
+                new ConfigDescription($"Enables the {definition.Id} enemy entry.", null,
+                    new ConfigurationManagerAttributes { Order = 50 }));
             defaults.Enabled = ruleEnabled.Value;
             ruleEnabled.SettingChanged += (_, _) => defaults.Enabled = ruleEnabled.Value;
 
@@ -94,9 +95,36 @@ public static class WeaponbreakerConfigEntries
                     defaults.EnemyWeaponDisarmChance,
                     new ConfigDescription(
                         "Probability of disarming this enemy after a perfect parry with a one-handed weapon.",
-                        new AcceptableValueRange<float>(0f, 1f)));
+                        new AcceptableValueRange<float>(0f, 1f),
+                        new ConfigurationManagerAttributes { Order = 40 }));
                 defaults.EnemyWeaponDisarmChance = enemyChance.Value;
                 enemyChance.SettingChanged += (_, _) => defaults.EnemyWeaponDisarmChance = enemyChance.Value;
+
+                var overrideEnchantChance = config.Bind(
+                    section,
+                    "OverrideEpicLootEnchantChance",
+                    defaults.OverrideEpicLootEnchantChance,
+                    new ConfigDescription(
+                        "Use the custom enchantment chance for this enemy instead of EpicLoot's drop chance. "
+                        + "Rarity and effects still come from EpicLoot. Without EpicLoot this setting has no effect: ordinary weapons are dropped. "
+                        + "Applies to weapons whose loot has not been rolled yet.", null,
+                        new ConfigurationManagerAttributes { Order = 30 }));
+                defaults.OverrideEpicLootEnchantChance = overrideEnchantChance.Value;
+                overrideEnchantChance.SettingChanged += (_, _) =>
+                    defaults.OverrideEpicLootEnchantChance = overrideEnchantChance.Value;
+
+                var enchantChance = config.Bind(
+                    section,
+                    "EpicLootEnchantChance",
+                    defaults.EpicLootEnchantChance ?? definition.DefaultEpicLootEnchantChance,
+                    new ConfigDescription(
+                        "Chance that a successfully disarmed weapon is enchanted (0 = 0%, 1 = 100%). "
+                        + "Requires EpicLoot and OverrideEpicLootEnchantChance. "
+                        + "Replaces EpicLoot's drop chance/category ratios; uses its equipment rarity tables and effects.",
+                        new AcceptableValueRange<float>(0f, 1f),
+                        new ConfigurationManagerAttributes { Order = 20 }));
+                defaults.EpicLootEnchantChance = enchantChance.Value;
+                enchantChance.SettingChanged += (_, _) => defaults.EpicLootEnchantChance = enchantChance.Value;
             }
 
             var playerChance = config.Bind(
@@ -105,7 +133,8 @@ public static class WeaponbreakerConfigEntries
                 defaults.PlayerDisarmChance,
                 new ConfigDescription(
                     "Probability that this enemy disarms the player's weapon after real damage.",
-                    new AcceptableValueRange<float>(0f, 1f)));
+                    new AcceptableValueRange<float>(0f, 1f),
+                    new ConfigurationManagerAttributes { Order = 10 }));
             defaults.PlayerDisarmChance = playerChance.Value;
             playerChance.SettingChanged += (_, _) => defaults.PlayerDisarmChance = playerChance.Value;
         }

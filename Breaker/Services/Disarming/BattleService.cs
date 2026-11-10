@@ -1,4 +1,4 @@
-namespace Weaponbreaker.Breaker.Services;
+namespace Weaponbreaker.Breaker.Services.Disarming;
 
 /// <summary>
 /// Orchestrates combat events and delegates mechanics to focused services.

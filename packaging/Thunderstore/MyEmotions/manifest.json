@@ -1,9 +1,0 @@
-{
-  "name": "MyEmotions",
-  "version_number": "0.1.0",
-  "website_url": "",
-  "description": "Your Viking reacts to weather, combat and everyday adventures with customizable overhead phrases. Russian default dialogue with strong language.",
-  "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.2360"
-  ]
-}

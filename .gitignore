@@ -58,8 +58,10 @@ Weaponbreaker.local.props
 
 # Generated Thunderstore archives and bundled plugin files (DLLs and licenses)
 /dist/
-/packaging/Thunderstore/*/plugins/
-/packaging/Thunderstore/*/icon.png
+
+# Local packaging assets and verification tools are not part of the source repository.
+/packaging/
+/verification/
 
 # Others
 ~$*

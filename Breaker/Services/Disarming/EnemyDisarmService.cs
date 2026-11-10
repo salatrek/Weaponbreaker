@@ -2,8 +2,9 @@ using BepInEx.Logging;
 using UnityEngine;
 using Weaponbreaker.Breaker.Configuration;
 using Weaponbreaker.Breaker.Rules;
+using Weaponbreaker.Breaker.Services.Weapons;
 
-namespace Weaponbreaker.Breaker.Services;
+namespace Weaponbreaker.Breaker.Services.Disarming;
 
 /// <summary>
 /// Handles mechanics that remove weapons from supported enemies.

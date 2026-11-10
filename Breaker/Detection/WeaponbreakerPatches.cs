@@ -3,7 +3,8 @@ using System.Reflection.Emit;
 using BepInEx.Logging;
 using HarmonyLib;
 using Weaponbreaker.Breaker.Configuration;
-using Weaponbreaker.Breaker.Services;
+using Weaponbreaker.Breaker.Services.Disarming;
+using Weaponbreaker.Breaker.Services.Weapons;
 
 namespace Weaponbreaker.Breaker.Detection;
 

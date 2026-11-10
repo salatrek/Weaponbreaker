@@ -2,7 +2,7 @@ using UnityEngine;
 using Weaponbreaker.Breaker.Configuration;
 using Weaponbreaker.Breaker.Rules;
 
-namespace Weaponbreaker.Breaker.Services;
+namespace Weaponbreaker.Breaker.Services.Weapons;
 
 /// <summary>
 /// Resolves equipped weapons, whitelist rules and registered fallback item prefabs.
@@ -86,6 +86,7 @@ internal sealed class WeaponProvider
         }
 
         var fallbackData = fallbackDrop.m_itemData.Clone();
+        fallbackData.m_dropPrefab = fallbackPrefab;
         fallbackData.m_quality = Mathf.Clamp(
             sourceWeapon.m_quality,
             1,

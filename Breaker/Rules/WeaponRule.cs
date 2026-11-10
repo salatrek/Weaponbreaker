@@ -48,13 +48,15 @@ internal sealed class EnemyDefinition
         string enemyPrefabPart,
         bool canDropWeapon,
         float defaultEnemyWeaponDisarmChance,
-        float defaultPlayerDisarmChance)
+        float defaultPlayerDisarmChance,
+        float defaultEpicLootEnchantChance = 0f)
     {
         Id = id;
         EnemyPrefabPart = enemyPrefabPart;
         CanDropWeapon = canDropWeapon;
         DefaultEnemyWeaponDisarmChance = defaultEnemyWeaponDisarmChance;
         DefaultPlayerDisarmChance = defaultPlayerDisarmChance;
+        DefaultEpicLootEnchantChance = defaultEpicLootEnchantChance;
     }
 
     public string Id { get; }
@@ -66,4 +68,6 @@ internal sealed class EnemyDefinition
     public float DefaultEnemyWeaponDisarmChance { get; }
 
     public float DefaultPlayerDisarmChance { get; }
+
+    public float DefaultEpicLootEnchantChance { get; }
 }
