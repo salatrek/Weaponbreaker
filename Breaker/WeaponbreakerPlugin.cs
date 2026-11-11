@@ -19,7 +19,7 @@ public sealed class WeaponbreakerPlugin : BaseUnityPlugin
 {
     private const string PluginGuid = "salatrek.Weaponbreaker";
     private const string PluginName = "Weaponbreaker";
-    private const string PluginVersion = "0.1.0";
+    private const string PluginVersion = "0.1.3";
 
     private readonly Harmony _harmony = new(PluginGuid);
     private BattleService? _battleService;
