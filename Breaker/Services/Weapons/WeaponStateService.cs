@@ -2,6 +2,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using Weaponbreaker.Breaker.Configuration;
+using Weaponbreaker.Breaker.Compatibility.DualWield;
 using Weaponbreaker.Breaker.Rules;
 using Weaponbreaker.Breaker.Services.Loot;
 
@@ -32,6 +33,7 @@ internal sealed class WeaponStateService
     private readonly WeaponbreakerOptions _configuration;
     private readonly WeaponProvider _weaponProvider;
     private readonly EnemyWeaponLootService _enemyLoot;
+    private readonly DualWieldIntegration _dualWield;
     private readonly ManualLogSource _logger;
     private readonly Dictionary<string, Character> _combatTargets = new(StringComparer.Ordinal);
     private readonly HashSet<string> _returningEnemies = new(StringComparer.Ordinal);
@@ -41,11 +43,13 @@ internal sealed class WeaponStateService
         WeaponbreakerOptions configuration,
         WeaponProvider weaponProvider,
         EnemyWeaponLootService enemyLoot,
+        DualWieldIntegration dualWield,
         ManualLogSource logger)
     {
         _configuration = configuration;
         _weaponProvider = weaponProvider;
         _enemyLoot = enemyLoot;
+        _dualWield = dualWield;
         _logger = logger;
     }
 
@@ -149,6 +153,7 @@ internal sealed class WeaponStateService
 
         player.UnequipItem(weapon, false);
         player.GetInventory()?.RemoveItem(weapon);
+        _dualWield.RefreshAfterPlayerDisarm(player);
         playerZdo.Set(
             PlayerDisarmCooldownUntilKey,
             (float)(now + _configuration.Cooldowns.PlayerDisarmSeconds));

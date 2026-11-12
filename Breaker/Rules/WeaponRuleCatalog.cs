@@ -9,33 +9,33 @@ internal sealed class WeaponRuleCatalog
 {
     private readonly IReadOnlyList<EnemyDefinition> _enemies = new[]
     {
-        new EnemyDefinition("Skeleton", "Skeleton", true, 0.30f, 0.01f, 0.15f),
-        new EnemyDefinition("Draugr", "Draugr", true, 0.30f, 0.02f, 0.20f),
-        new EnemyDefinition("Fuling", "Fuling", true, 0.30f, 0.04f, 0.25f),
-        new EnemyDefinition("Charred", "Charred", true, 0.30f, 0.12f, 0.35f),
-        new EnemyDefinition("Dvergr", "Dvergr", true, 0.30f, 0.08f, 0.30f),
-        new EnemyDefinition("Boar", "Boar", false, 0f, 0.005f),
-        new EnemyDefinition("Deathsquito", "Deathsquito", false, 0f, 0.01f),
-        new EnemyDefinition("Leech", "Leech", false, 0f, 0.01f),
-        new EnemyDefinition("Neck", "Neck", false, 0f, 0.005f),
-        new EnemyDefinition("Greydwarf", "Greydwarf", false, 0f, 0.005f),
-        new EnemyDefinition("Troll", "Troll", false, 0f, 0.03f),
-        new EnemyDefinition("Wolf", "Wolf", false, 0f, 0.01f),
-        new EnemyDefinition("Lox", "Lox", false, 0f, 0.02f),
+        new EnemyDefinition("Skeleton", "Skeleton", true, 0.30f, 0.10f, 0.15f),
+        new EnemyDefinition("Draugr", "Draugr", true, 0.30f, 0.12f, 0.20f),
+        new EnemyDefinition("Fuling", "Fuling", true, 0.30f, 0.20f, 0.25f),
+        new EnemyDefinition("Charred", "Charred", true, 0.30f, 0.25f, 0.35f),
+        new EnemyDefinition("Dvergr", "Dvergr", true, 0.30f, 0.22f, 0.30f),
+        new EnemyDefinition("Boar", "Boar", false, 0f, 0.05f),
+        new EnemyDefinition("Deathsquito", "Deathsquito", false, 0f, 0.08f),
+        new EnemyDefinition("Leech", "Leech", false, 0f, 0.08f),
+        new EnemyDefinition("Neck", "Neck", false, 0f, 0.05f),
+        new EnemyDefinition("Greydwarf", "Greydwarf", false, 0f, 0.05f),
+        new EnemyDefinition("Troll", "Troll", false, 0f, 0.15f),
+        new EnemyDefinition("Wolf", "Wolf", false, 0f, 0.08f),
+        new EnemyDefinition("Lox", "Lox", false, 0f, 0.18f),
     };
 
     private readonly IReadOnlyList<WeaponRule> _rules = new[]
     {
-        new WeaponRule("SkeletonSword", "Skeleton", "Skeleton", "sword", "SwordBronze", 0.30f, 0.005f),
-        new WeaponRule("SkeletonMace", "Skeleton", "Skeleton", "mace", "MaceIron", 0.30f, 0.01f),
-        new WeaponRule("DraugrAxe", "Draugr", "Draugr", "axe", "AxeIron", 0.30f, 0.015f),
-        new WeaponRule("DraugrSword", "Draugr", "Draugr", "sword", "SwordIron", 0.30f, 0.04f),
-        new WeaponRule("FulingClub", "Fuling", "Fuling", "club", "Club", 0.30f, 0.03f),
-        new WeaponRule("FulingSword", "Fuling", "Fuling", "sword", "SwordBlackmetal", 0.30f, 0.04f),
-        new WeaponRule("FulingSpear", "Fuling", "Fuling", "spear", "SpearWolfFang", 0.30f, 0.05f),
-        new WeaponRule("CharredSword", "Charred", "Charred", "sword", "THSwordSlayer", 0.30f, 0.12f),
-        new WeaponRule("DvergrSword", "Dvergr", "Dvergr", "sword", "SwordMistwalker", 0.30f, 0.08f),
-        new WeaponRule("DvergrAxe", "Dvergr", "Dvergr", "axe", "Battleaxe", 0.30f, 0.10f),
+        new WeaponRule("SkeletonSword", "Skeleton", "Skeleton", "sword", "SwordBronze", 0.30f, 0.05f),
+        new WeaponRule("SkeletonMace", "Skeleton", "Skeleton", "mace", "MaceIron", 0.30f, 0.10f),
+        new WeaponRule("DraugrAxe", "Draugr", "Draugr", "axe", "AxeIron", 0.30f, 0.15f),
+        new WeaponRule("DraugrSword", "Draugr", "Draugr", "sword", "SwordIron", 0.30f, 0.40f),
+        new WeaponRule("FulingClub", "Fuling", "Fuling", "club", "Club", 0.30f, 0.30f),
+        new WeaponRule("FulingSword", "Fuling", "Fuling", "sword", "SwordBlackmetal", 0.30f, 0.40f),
+        new WeaponRule("FulingSpear", "Fuling", "Fuling", "spear", "SpearWolfFang", 0.30f, 0.50f),
+        new WeaponRule("CharredSword", "Charred", "Charred", "sword", "THSwordSlayer", 0.30f, 1.00f),
+        new WeaponRule("DvergrSword", "Dvergr", "Dvergr", "sword", "SwordMistwalker", 0.30f, 0.80f),
+        new WeaponRule("DvergrAxe", "Dvergr", "Dvergr", "axe", "Battleaxe", 0.30f, 1.00f),
     };
 
     public IReadOnlyList<EnemyDefinition> Enemies => _enemies;

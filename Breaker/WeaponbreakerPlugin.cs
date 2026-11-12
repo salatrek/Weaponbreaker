@@ -1,6 +1,7 @@
 using BepInEx;
 using HarmonyLib;
 using Weaponbreaker.Breaker.Compatibility.EpicLoot;
+using Weaponbreaker.Breaker.Compatibility.DualWield;
 using Weaponbreaker.Breaker.Configuration;
 using Weaponbreaker.Breaker.Detection;
 using Weaponbreaker.Breaker.Rules;
@@ -15,11 +16,12 @@ namespace Weaponbreaker.Breaker;
 /// </summary>
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInDependency(EpicLootIntegration.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(DualWieldIntegration.PluginGuid, BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class WeaponbreakerPlugin : BaseUnityPlugin
 {
     private const string PluginGuid = "salatrek.Weaponbreaker";
     private const string PluginName = "Weaponbreaker";
-    private const string PluginVersion = "0.1.3";
+    private const string PluginVersion = "0.1.4";
 
     private readonly Harmony _harmony = new(PluginGuid);
     private BattleService? _battleService;
@@ -35,9 +37,10 @@ public sealed class WeaponbreakerPlugin : BaseUnityPlugin
         var configSync = new WeaponbreakerConfigSync(options, Logger);
         var weaponProvider = new WeaponProvider(options, ruleCatalog);
         var enemyLoot = new EnemyWeaponLootService(options, EpicLootIntegration.Create(Logger), Logger);
-        var weaponState = new WeaponStateService(options, weaponProvider, enemyLoot, Logger);
+        var dualWield = new DualWieldIntegration(Logger);
+        var weaponState = new WeaponStateService(options, weaponProvider, enemyLoot, dualWield, Logger);
         var enemyDisarm = new EnemyDisarmService(options, weaponProvider, weaponState, Logger);
-        var playerDisarm = new PlayerDisarmService(options, weaponProvider, weaponState, Logger);
+        var playerDisarm = new PlayerDisarmService(options, weaponProvider, weaponState, dualWield, Logger);
         _battleService = new BattleService(enemyDisarm, playerDisarm);
 
         WeaponbreakerPatches.Initialize(_battleService, weaponState, configSync, Logger);

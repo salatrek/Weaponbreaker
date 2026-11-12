@@ -69,7 +69,14 @@ internal sealed class WeaponProvider
         Character character,
         ItemDrop.ItemData item)
     {
-        return GetSkillMultiplier(character.GetSkillLevel(GetSkillType(item)), false);
+        var skillLevel = Mathf.Clamp(
+            character.GetSkillLevel(GetSkillType(item)),
+            0f,
+            100f);
+
+        // Player disarm chance decreases smoothly from 100% of its configured
+        // base value at skill 0 to 25% at skill 100.
+        return Mathf.Lerp(1f, 0.25f, skillLevel / 100f);
     }
 
     public ItemDrop.ItemData? CreateEnemyDropData(

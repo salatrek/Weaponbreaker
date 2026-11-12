@@ -41,8 +41,11 @@ public sealed class EnemyOptions
     /// <summary>Chance among disarmed weapons. Missing values use the enemy family's default.</summary>
     public float? EpicLootEnchantChance { get; set; }
 
-    /// <summary>Probability that this enemy disarms the player's active weapon after a real hit.</summary>
-    public float PlayerDisarmChance { get; set; } = 0.01f;
+    /// <summary>
+    /// Base probability that this enemy disarms the player's active weapon after a real hit.
+    /// The weapon skill scales this from 100% of the base value at skill 0 to 25% at skill 100.
+    /// </summary>
+    public float PlayerDisarmChance { get; set; } = 0.05f;
 }
 
 /// <summary>

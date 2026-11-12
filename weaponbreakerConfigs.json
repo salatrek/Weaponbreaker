@@ -13,67 +13,67 @@
       "EnemyWeaponDisarmChance": 0.30,
       "OverrideEpicLootEnchantChance": false,
       "EpicLootEnchantChance": 0.15,
-      "PlayerDisarmChance": 0.01
+      "PlayerDisarmChance": 0.10
     },
     "Draugr": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
       "OverrideEpicLootEnchantChance": false,
       "EpicLootEnchantChance": 0.20,
-      "PlayerDisarmChance": 0.02
+      "PlayerDisarmChance": 0.12
     },
     "Fuling": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
       "OverrideEpicLootEnchantChance": false,
       "EpicLootEnchantChance": 0.25,
-      "PlayerDisarmChance": 0.04
+      "PlayerDisarmChance": 0.20
     },
     "Charred": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
       "OverrideEpicLootEnchantChance": false,
       "EpicLootEnchantChance": 0.35,
-      "PlayerDisarmChance": 0.12
+      "PlayerDisarmChance": 0.25
     },
     "Dvergr": {
       "Enabled": true,
       "EnemyWeaponDisarmChance": 0.30,
       "OverrideEpicLootEnchantChance": false,
       "EpicLootEnchantChance": 0.30,
-      "PlayerDisarmChance": 0.08
+      "PlayerDisarmChance": 0.22
     },
     "Boar": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.005
+      "PlayerDisarmChance": 0.05
     },
     "Deathsquito": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.01
+      "PlayerDisarmChance": 0.08
     },
     "Leech": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.01
+      "PlayerDisarmChance": 0.08
     },
     "Neck": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.005
+      "PlayerDisarmChance": 0.05
     },
     "Greydwarf": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.005
+      "PlayerDisarmChance": 0.05
     },
     "Troll": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.03
+      "PlayerDisarmChance": 0.15
     },
     "Wolf": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.01
+      "PlayerDisarmChance": 0.08
     },
     "Lox": {
       "Enabled": true,
-      "PlayerDisarmChance": 0.02
+      "PlayerDisarmChance": 0.18
     }
   }
 }
