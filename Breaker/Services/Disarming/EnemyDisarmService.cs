@@ -17,6 +17,7 @@ internal sealed class EnemyDisarmService
     private readonly WeaponProvider _weaponProvider;
     private readonly WeaponStateService _weaponState;
     private readonly ManualLogSource _logger;
+    internal Action<Humanoid, Humanoid, ItemDrop.ItemData>? ForwardParry { get; set; }
 
     public EnemyDisarmService(
         WeaponbreakerOptions configuration,
@@ -36,17 +37,42 @@ internal sealed class EnemyDisarmService
         Character attacker,
         ItemDrop.ItemData blocker)
     {
-        if (!_configuration.Enabled
-            || !_configuration.EnemyDisarmEnabled
-            || hit is null
+        if (hit is null
             || attacker is not Humanoid enemy
             || enemy.IsPlayer()
             || enemy.IsDead()
-            || !enemy.IsOwner()
-            || _weaponState.HasDisarmedFallbackWeapon(enemy)
             || hit.m_ranged
             || blocker?.m_shared is null)
         {
+            return;
+        }
+
+        // BlockAttack runs on the defending player's peer, which need not own the attacker.
+        // Do not execute on mirrored/non-owned player objects or claim ownership of the enemy.
+        if (!defender.IsPlayer() || !defender.IsOwner()) return;
+        if (!enemy.IsOwner())
+        {
+            ForwardParry?.Invoke(defender, enemy, blocker);
+            return;
+        }
+        TryOwnedPerfectParry(enemy, blocker, WeaponProvider.GetOffensiveSkillMultiplier(defender, blocker));
+    }
+
+    internal void TryOwnedPerfectParry(Humanoid enemy, ItemDrop.ItemData blocker, float skillMultiplier)
+    {
+        if (!_configuration.Enabled || !_configuration.EnemyDisarmEnabled)
+        {
+            _logger.LogInfo("[Parry] Skipped: host configuration disables enemy disarming.");
+            return;
+        }
+        if (!enemy.IsOwner() || enemy.IsDead() || enemy.IsPlayer())
+        {
+            _logger.LogInfo($"[Parry] Skipped: enemy unavailable or owned by another peer; enemy={enemy.GetZDOID()}.");
+            return;
+        }
+        if (_weaponState.HasDisarmedFallbackWeapon(enemy))
+        {
+            _logger.LogInfo($"[Parry] Skipped: enemy={enemy.GetZDOID()} already disarmed.");
             return;
         }
 
@@ -66,7 +92,8 @@ internal sealed class EnemyDisarmService
 
         var chance = ruleOptions.EnemyWeaponDisarmChance
             * GetParryChanceMultiplier(blocker)
-            * WeaponProvider.GetOffensiveSkillMultiplier(defender, blocker);
+            * skillMultiplier;
+        _logger.LogInfo($"[Parry] Chance: enemy={enemy.GetZDOID()}, base={ruleOptions.EnemyWeaponDisarmChance:F3}, blockerMultiplier={GetParryChanceMultiplier(blocker):F3}, skillMultiplier={skillMultiplier:F3}, final={Mathf.Clamp01(chance):F3}.");
         TryDisarm(enemy, weapon, rule, chance, "perfect parry");
     }
 
@@ -111,18 +138,21 @@ internal sealed class EnemyDisarmService
         float chance,
         string reason)
     {
-        if (chance <= 0f || UnityEngine.Random.value > Mathf.Clamp01(chance))
+        var roll = UnityEngine.Random.value;
+        if (chance <= 0f || roll > Mathf.Clamp01(chance))
         {
+            _logger.LogInfo($"[Parry] Roll failed: enemy={enemy.GetZDOID()}, reason={reason}, chance={Mathf.Clamp01(chance):F3}, roll={roll:F3}.");
             return;
         }
 
-        if (_weaponState.TryDropEnemyWeapon(enemy, weapon, rule))
+        if (_weaponState.TryDropEnemyWeapon(enemy, weapon, rule, out var failure))
         {
             _logger.LogInfo($"Disarmed '{enemy.name}' by {reason}.");
         }
+        else _logger.LogInfo($"[Parry] Drop skipped: enemy={enemy.GetZDOID()}, reason={failure}.");
     }
 
-    private static float GetParryChanceMultiplier(ItemDrop.ItemData blocker)
+    internal static float GetParryChanceMultiplier(ItemDrop.ItemData blocker)
     {
         return blocker.m_shared!.m_itemType switch
         {

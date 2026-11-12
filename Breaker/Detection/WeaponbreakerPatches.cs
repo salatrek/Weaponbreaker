@@ -17,6 +17,7 @@ internal static class WeaponbreakerPatches
     private static WeaponStateService? _weaponState;
     private static WeaponbreakerConfigSync? _configSync;
     private static ManualLogSource? _logger;
+    private static float _nextErrorLog;
 
     public static void Initialize(
         BattleService battleService,
@@ -81,20 +82,6 @@ internal static class WeaponbreakerPatches
             AccessTools.Method(typeof(ItemDrop), nameof(ItemDrop.Load)),
             nameof(ItemDropLoadPostfix));
 
-        Patch(
-            harmony,
-            AccessTools.Method(typeof(ZNet), "Start"),
-            nameof(ZNetStartPostfix));
-
-        Patch(
-            harmony,
-            AccessTools.Method(typeof(ZNet), "OnNewConnection"),
-            nameof(ZNetOnNewConnectionPostfix));
-
-        Patch(
-            harmony,
-            AccessTools.Method(typeof(ZNet), "Update"),
-            nameof(ZNetUpdatePostfix));
     }
 
     private static void Patch(
@@ -157,12 +144,14 @@ internal static class WeaponbreakerPatches
 
     private static void RecordSuccessfulBlock(Humanoid defender, HitData hit)
     {
-        var blocker = AccessTools.Method(typeof(Humanoid), "GetCurrentBlocker")
-            .Invoke(defender, null) as ItemDrop.ItemData;
-        if (blocker is not null)
+        if (_configSync?.GameplayReady != true) return;
+        try
         {
-            BlockOutcomeTracker.Record(defender, hit, blocker);
+            var blocker = AccessTools.Method(typeof(Humanoid), "GetCurrentBlocker")
+                .Invoke(defender, null) as ItemDrop.ItemData;
+            if (blocker is not null) BlockOutcomeTracker.Record(defender, hit, blocker);
         }
+        catch (Exception exception) { LogFailure("block tracking", exception); }
     }
 
     private static void HumanoidBlockAttackPostfix(
@@ -174,7 +163,8 @@ internal static class WeaponbreakerPatches
     {
         const float VanillaPerfectBlockIntervalSeconds = 0.25f;
 
-        if (_battleService is null
+        if (_configSync?.GameplayReady != true
+            || _battleService is null
             || !__result
             || hit is null
             || !BlockOutcomeTracker.WasBlockedBy(__instance, hit)
@@ -203,14 +193,18 @@ internal static class WeaponbreakerPatches
         }
         catch (Exception exception)
         {
-            _logger?.LogError($"Weaponbreaker parry handling failed: {exception}");
+            LogFailure("parry handling", exception);
         }
     }
 
     private static void CharacterDamagePrefix(
         HitData hit)
     {
-        _weaponState?.ScaleDisarmedEnemyDamage(hit);
+        try
+        {
+            if (_configSync?.GameplayReady == true) _weaponState?.ScaleDisarmedEnemyDamage(hit);
+        }
+        catch (Exception exception) { LogFailure("damage scaling", exception); }
     }
 
     private static void CharacterRpcDamagePrefix(
@@ -230,7 +224,7 @@ internal static class WeaponbreakerPatches
         HitData hit,
         float __state)
     {
-        if (hit is null)
+        if (hit is null || _configSync?.GameplayReady != true)
         {
             return;
         }
@@ -253,19 +247,27 @@ internal static class WeaponbreakerPatches
         }
         catch (Exception exception)
         {
-            _logger?.LogError($"Weaponbreaker damage handling failed: {exception}");
+            LogFailure("damage handling", exception);
         }
     }
 
     private static bool MonsterAIUpdateAIPrefix(MonsterAI __instance)
     {
-        if (_weaponState is null)
+        if (_weaponState is null || _configSync?.GameplayReady != true)
         {
             return true;
         }
 
-        var humanoid = __instance.GetComponent<Humanoid>();
-        return humanoid is null || !_weaponState.TryReturnToDroppedWeapon(humanoid);
+        try
+        {
+            var humanoid = __instance.GetComponent<Humanoid>();
+            return humanoid is null || !_weaponState.TryReturnToDroppedWeapon(humanoid);
+        }
+        catch (Exception exception)
+        {
+            LogFailure("AI handling", exception);
+            return true;
+        }
     }
 
     private static void ItemDropLoadPostfix(ItemDrop __instance)
@@ -276,22 +278,15 @@ internal static class WeaponbreakerPatches
         }
         catch (Exception exception)
         {
-            _logger?.LogError($"Weaponbreaker item marker handling failed: {exception}");
+            LogFailure("item marker handling", exception);
         }
     }
 
-    private static void ZNetStartPostfix()
+    private static void LogFailure(string operation, Exception exception)
     {
-        _configSync?.Initialize();
-    }
-
-    private static void ZNetOnNewConnectionPostfix(ZNetPeer peer)
-    {
-        _configSync?.OnNewConnection(peer);
-    }
-
-    private static void ZNetUpdatePostfix()
-    {
-        _configSync?.Tick();
+        var now = UnityEngine.Time.realtimeSinceStartup;
+        if (now < _nextErrorLog) return;
+        _nextErrorLog = now + 10f;
+        _logger?.LogError($"Weaponbreaker {operation} failed; vanilla processing continues: {exception}");
     }
 }

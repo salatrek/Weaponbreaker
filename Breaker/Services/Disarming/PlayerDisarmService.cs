@@ -57,7 +57,7 @@ internal sealed class PlayerDisarmService
         }
 
         var playerWeapon = player.GetCurrentWeapon();
-        var multiplier = _dualWield.TryGetDefensiveSkillMultiplier(player, playerWeapon!, out var dualMultiplier)
+        var multiplier = _configuration.AllowDualWield && _dualWield.TryGetDefensiveSkillMultiplier(player, playerWeapon!, out var dualMultiplier)
             ? dualMultiplier
             : WeaponProvider.GetDefensiveSkillMultiplier(player, playerWeapon!);
         var chance = enemyOptions.PlayerDisarmChance * multiplier;

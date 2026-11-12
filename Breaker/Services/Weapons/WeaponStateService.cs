@@ -56,13 +56,19 @@ internal sealed class WeaponStateService
     public bool TryDropEnemyWeapon(
         Humanoid enemy,
         ItemDrop.ItemData weapon,
-        WeaponRule rule)
+        WeaponRule rule,
+        out string failure)
     {
-        var enemyZdo = GetZdo(enemy);
+        failure = "invalid or non-owned enemy ZDO";
+        var enemyZdo = GetOwnedZdo(enemy);
         var now = GetNetworkTimeSeconds();
-        if (enemyZdo is null
-            || enemyZdo.GetFloat(EnemyDisarmCooldownUntilKey, 0f) > now)
+        if (enemyZdo is null)
         {
+            return false;
+        }
+        if (enemyZdo.GetFloat(EnemyDisarmCooldownUntilKey, 0f) > now)
+        {
+            failure = "enemy disarm cooldown is active";
             return false;
         }
 
@@ -76,6 +82,7 @@ internal sealed class WeaponStateService
         var dropData = _weaponProvider.CreateEnemyDropData(weapon, rule);
         if (dropData?.m_dropPrefab is null)
         {
+            failure = "registered drop prefab unavailable";
             _logger.LogWarning(
                 $"Could not create a registered weapon drop for '{enemy.name}' / '{rule.DropPrefab}'.");
             return false;
@@ -87,8 +94,9 @@ internal sealed class WeaponStateService
             1,
             enemy.transform.position + Vector3.up * 0.5f,
             Quaternion.identity);
-        if (droppedWeapon is null)
+        if (!droppedWeapon || GetOwnedDropZdo(droppedWeapon) is null)
         {
+            failure = "drop creation failed or its ZDO is not locally owned";
             return false;
         }
 
@@ -108,6 +116,8 @@ internal sealed class WeaponStateService
             + $"dropPrefab='{rule.DropPrefab}'.");
 
         MarkEnemyDrop(droppedWeapon, enemy, now, enemyZdo);
+        failure = "";
+        _logger.LogInfo($"[ZDO] Enemy disarm committed: character={enemy.GetZDOID()}, owner={enemyZdo.GetOwner()}, drop={GetZdoId(GetZdo(droppedWeapon)!)}.");
         var monsterAi = enemy.GetComponent<MonsterAI>();
         if (monsterAi is not null
             && combatTarget is not null
@@ -124,7 +134,7 @@ internal sealed class WeaponStateService
         Player player,
         Humanoid disarmingEnemy)
     {
-        var playerZdo = GetZdo(player);
+        var playerZdo = GetOwnedZdo(player);
         var now = GetNetworkTimeSeconds();
         if (playerZdo is null
             || playerZdo.GetFloat(PlayerDisarmCooldownUntilKey, 0f) > now)
@@ -146,7 +156,7 @@ internal sealed class WeaponStateService
             1,
             player.transform.position + Vector3.up * 0.5f,
             Quaternion.identity);
-        if (droppedWeapon is null)
+        if (!droppedWeapon || GetOwnedDropZdo(droppedWeapon) is null)
         {
             return false;
         }
@@ -158,6 +168,7 @@ internal sealed class WeaponStateService
             PlayerDisarmCooldownUntilKey,
             (float)(now + _configuration.Cooldowns.PlayerDisarmSeconds));
         MarkPlayerDrop(droppedWeapon, disarmingEnemy, now);
+        _logger.LogInfo($"[ZDO] Player disarm committed: character={player.GetZDOID()}, owner={playerZdo.GetOwner()}, drop={GetZdoId(GetZdo(droppedWeapon)!)}.");
         return true;
     }
 
@@ -211,7 +222,7 @@ internal sealed class WeaponStateService
             return false;
         }
 
-        var enemyZdo = GetZdo(enemy);
+        var enemyZdo = GetOwnedZdo(enemy);
         if (enemyZdo is null)
         {
             return false;
@@ -258,18 +269,22 @@ internal sealed class WeaponStateService
         var dropId = new ZDOID(pendingUser, unchecked((uint)pendingId));
         var dropObject = ZNetScene.instance?.FindInstance(dropId);
         var droppedWeapon = dropObject?.GetComponent<ItemDrop>();
-        if (droppedWeapon is null)
+        if (!droppedWeapon)
         {
             // The player may have picked up the exact pending item while the enemy
             // was returning. Restore the suspended combat target immediately.
+            // A missing scene instance can mean that the drop has not streamed in yet.
+            // Keep the ZDO reference until ZDOMan confirms the item no longer exists.
+            if (ZDOMan.instance == null || ZDOMan.instance.GetZDO(dropId) != null)
+                return _returningEnemies.Contains(enemyKey);
             RestoreCombatTarget(enemy, monsterAi);
             ClearPendingDrop(enemyZdo);
             return false;
         }
 
         var dropZdo = GetZdo(droppedWeapon);
-        if (dropZdo is null
-            || !dropZdo.GetBool(DisarmedWeaponKey, false)
+        if (dropZdo is null) return _returningEnemies.Contains(enemyKey);
+        if (!dropZdo.GetBool(DisarmedWeaponKey, false)
             || !string.Equals(
                 dropZdo.GetString(SourceEnemyKey, string.Empty),
                 enemy.GetZDOID().ToString(),
@@ -354,8 +369,8 @@ internal sealed class WeaponStateService
         ZDO enemyZdo)
     {
         droppedWeapon.m_autoPickup = false;
-        var dropZdo = GetZdo(droppedWeapon);
-        if (dropZdo is null)
+        var dropZdo = GetOwnedDropZdo(droppedWeapon);
+        if (dropZdo is null || !enemyZdo.IsValid() || !enemyZdo.IsOwner())
         {
             return;
         }
@@ -379,7 +394,7 @@ internal sealed class WeaponStateService
         double now)
     {
         droppedWeapon.m_autoPickup = false;
-        var zdo = GetZdo(droppedWeapon);
+        var zdo = GetOwnedDropZdo(droppedWeapon);
         if (zdo is null)
         {
             return;
@@ -393,6 +408,7 @@ internal sealed class WeaponStateService
 
     private static void ClearPendingDrop(ZDO enemyZdo)
     {
+        if (!enemyZdo.IsValid() || !enemyZdo.IsOwner()) return;
         enemyZdo.Set(PendingDropUserKey, 0L);
         enemyZdo.Set(PendingDropIdKey, 0);
         enemyZdo.Set(PendingReturnPositionKey, Vector3.zero);
@@ -594,20 +610,40 @@ internal sealed class WeaponStateService
 
     private static ZDO? GetZdo(Character character)
     {
+        if (!character) return null;
         var view = AccessTools.Field(typeof(Character), "m_nview")?.GetValue(character) as ZNetView;
-        return view?.GetZDO();
+        return view && view.IsValid() && view.GetZDO().m_uid != ZDOID.None ? view.GetZDO() : null;
     }
 
     private static ZDO? GetZdo(ItemDrop itemDrop)
     {
+        if (!itemDrop) return null;
         var view = AccessTools.Field(typeof(ItemDrop), "m_nview")?.GetValue(itemDrop) as ZNetView;
-        return view?.GetZDO();
+        return view && view.IsValid() && view.GetZDO().m_uid != ZDOID.None ? view.GetZDO() : null;
+    }
+
+    private static ZDO? GetOwnedZdo(Character character)
+    {
+        var zdo = GetZdo(character);
+        return zdo != null && zdo.IsOwner() && character.IsOwner() ? zdo : null;
+    }
+
+    private static ZDO? GetOwnedDropZdo(ItemDrop itemDrop)
+    {
+        var zdo = GetZdo(itemDrop);
+        return zdo != null && zdo.IsOwner() ? zdo : null;
+    }
+
+    internal void ResetSession()
+    {
+        _combatTargets.Clear();
+        _returningEnemies.Clear();
+        _fallbackWeapons.Clear();
     }
 
     private static ZDOID GetZdoId(ZDO zdo)
     {
-        var field = AccessTools.Field(typeof(ZDO), "m_uid");
-        return field?.GetValue(zdo) is ZDOID id ? id : new ZDOID();
+        return zdo.m_uid;
     }
 
     private static double GetNetworkTimeSeconds()

@@ -22,6 +22,9 @@ internal sealed class EnemyWeaponLootService
 
     internal ItemDrop.ItemData Prepare(Humanoid enemy, ZDO enemyZdo, string enemyId, string prefab, ItemDrop.ItemData ordinaryItem)
     {
+        if (!enemy || !enemy.IsOwner() || !enemyZdo.IsValid() || !enemyZdo.IsOwner()
+            || enemyZdo.m_uid == ZDOID.None || enemyZdo.m_uid != enemy.GetZDOID())
+            return ordinaryItem;
         var key = StateKeyPrefix + prefab;
         var saved = enemyZdo.GetString(key, "");
         if (!string.IsNullOrEmpty(saved))
@@ -50,7 +53,7 @@ internal sealed class EnemyWeaponLootService
 
         // Read current host options, since network sync replaces the enemy dictionary.
         _options.Enemies.TryGetValue(enemyId, out var options);
-        var result = _epicLoot?.Enchant(enemy, ordinaryItem, options) ?? ordinaryItem;
+        var result = (_options.AllowEpicLoot ? _epicLoot?.Enchant(enemy, ordinaryItem, options) : null) ?? ordinaryItem;
         enemyZdo.Set(key, JsonSerializer.Serialize(EnemyWeaponLootState.Capture(prefab, result)));
         return result;
     }

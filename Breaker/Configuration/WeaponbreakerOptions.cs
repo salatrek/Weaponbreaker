@@ -5,6 +5,9 @@ namespace Weaponbreaker.Breaker.Configuration;
 /// </summary>
 public sealed class WeaponbreakerOptions
 {
+    // Effective session policy only; not persisted or accepted from clients.
+    internal bool AllowEpicLoot { get; set; } = true;
+    internal bool AllowDualWield { get; set; } = true;
     /// <summary>Enables or disables all Weaponbreaker logic.</summary>
     public bool Enabled { get; set; } = true;
 
